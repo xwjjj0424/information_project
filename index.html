@@ -1,36 +1,133 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <title>InfoVis</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Data Dashboard</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+        }
+
+        .dashboard-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            /*grid-auto-columns: auto;*/
+            gap: 10px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .chart-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        .chart-title {
+            margin: 0 0 15px 0;
+            color: #333;
+            font-size: 1.2em;
+        }
+
+        .tooltip {
+            position: absolute;
+            padding: 8px;
+            background: white;
+            border: 1px solid #ddd;
+            pointer-events: none;
+            font-size: 14px;
+        }
+
+        .axis { cursor: move; }
+        .axis text { font-size: 12px; fill: black; }
+        .line { stroke-width: 1; opacity: 0.4; }
+        .slider-container { margin: 20px; }
+        .slider-label { font-family: Arial; margin-left: 10px; }
+    </style>
 </head>
-
 <body>
-	<h3>Links</h3>
-	<ul>
-	<li>
-	<a href="canvas-example.html">Canvas Example</a>
-	</li>
-	<li>
-	<a href="d3-example.html">D3 Example</a>
-	</li>
-	<li>
-	<a href="src.zip">Download sourcecode</a>
-	</li>
-	<li>
-		<a href="horsepower_weight_scatterplot.html">scatter plot: horsepower and weight</a>
-	</li>
-	<li>
-		<a href="heatmap_correlation_matrix.html">heatmap plot</a>
-	</li>
-    <li>
-        <a href="pcp.html">Parallel Coordinates Plot</a>
-    </li>
-    <li>
-        <a href="bar.html">MPG/Origin Bar Chart</a>
-    </li>
+    <div class="dashboard-container">
+        <div class="chart-container" id="scatter-cont">
+            <h2 class="chart-title">Horsepower vs Weight</h2>
+            <svg id="scatterplot" width="700" height="500"></svg>
 
-    </ul>
+            <div class="tooltip" id="scatter-tooltip"></div>
+        </div>
+        
+        <div class="chart-container" id="heatmap-cont">
+            <h2 class="chart-title">Correlation Matrix</h2>
+            <svg id="heatmap" width="700" height="500"></svg>
+        </div>
+        
+        <div class="chart-container" id="bar-cont">
+            <h2 class="chart-title">Average MPG by Origin</h2>
+            <svg id="bar-chart" width="700" height="500"></svg>
+        </div>
+
+        <div class="chart-container" id="pcp-cont">
+            <h2 class="chart-title">Parallel Coordinates</h2>
+            <svg id="pcp-chart" width="1000" height="1000"></svg>
+        </div>
+
+    </div>
+
+    <script src="unified_visualizations.js"></script>
+
+    <!--
+    <script>
+        // Wait for DOM to be fully ready
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load modified scripts sequentially
+            loadScript('horsepower_weight_scatterplot.js', modifyScatterplot);
+            loadScript('heatmap_correlation_matrix.js', modifyHeatmap);
+            loadScript('pcp.js', modifyPCP);
+            loadScript('bar.js', modifyBar);
+        });
+
+        function loadScript(src, modifier) {
+            fetch(src)
+                .then(response => response.text())
+                .then(code => {
+                    const script = document.createElement('script');
+                    script.textContent = modifier(code);
+                    document.body.appendChild(script);
+                });
+        }
+
+        // Script modifiers
+        function modifyScatterplot(code) {
+            return code.replace(/d3.select\("svg"\)/g, 'd3.select("#scatterplot")')
+                      .replace(/width = \+svg.attr\("width"\)[^;]+;/, 'width = 700;')
+                      .replace(/height = \+svg.attr\("height"\)[^;]+;/, 'height = 500;');
+        }
+
+        function modifyHeatmap(code) {
+            return code.replace(/d3.select\("svg"\)/g, 'd3.select("#heatmap")')
+                      .replace(/var div = document.getElementById\('heat_cont'\)/, 'var div = document.getElementById("heatmap")')
+                      .replace(/width = \+svg.attr\("width"\)[^;]+;/, 'width = 700;')
+                      .replace(/height = \+svg.attr\("height"\)[^;]+;/, 'height = 500;');
+        }
+
+        function modifyPCP(code) {
+            return code.replace(/document.body/g, 'document.getElementById("pcp-chart")')
+                      .replace(/var width = [^;]+;/, 'var width = 700;')
+                      .replace(/var height = [^;]+;/, 'var height = 400;')
+                      .replace(/div = document.getElementById\('pcp_cont'\)/g, 'div = document.getElementById("pcp-chart")');
+        }
+
+        function modifyBar(code) {
+            return code.replace(/d3.select\("body"\)/g, 'd3.select("#bar-chart")')
+                      .replace(/totalWidth = 400/g, 'totalWidth = 700')
+                      .replace(/totalHeight = 400/g, 'totalHeight = 500');
+        }
+    </script>
+    -->
 </body>
-
 </html>
