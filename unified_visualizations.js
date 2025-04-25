@@ -17,49 +17,125 @@
 
     // Scatterplot Implementation
     function initializeScatterplot(data) {
-        const margin = { top: 40, right: 40, bottom: 60, left: 80 };
-        const width = 700 - margin.left - margin.right;
-        const height = 500 - margin.top - margin.bottom;
+      const svg = d3.select("#scatterplot");
+      svg.selectAll("*").remove(); // Clear previous plot
+  
+      // ⬇️ Get width and height directly from viewBox
+      const fullWidth = 700;
+      const fullHeight = 500;
+  
+      const margin = { top: 40, right: 20, bottom: 60, left: 60 };
+      const width = fullWidth - margin.left - margin.right;
+      const height = fullHeight - margin.top - margin.bottom;
+  
+      const plot = svg.append("g")
+          .attr("transform", `translate(${margin.left},${margin.top})`);
 
-        const svg = d3.select("#scatterplot")
-            .append("svg")
-            .attr("width", width + margin.left + margin.right)
-            .attr("height", height + margin.top + margin.bottom)
-            .append("g")
-            .attr("transform", `translate(${margin.left},${margin.top})`);
+      const filtered = data.filter(d => d.Horsepower != null && d.Weight != null);
+  
+      const x = d3.scaleLinear()
+          .domain(d3.extent(filtered , d => +d.Horsepower)) // make sure numeric
+          .range([0, width])
+          .nice();
+  
+      const y = d3.scaleLinear()
+          .domain(d3.extent(data, d => +d.Weight))
+          .range([height, 0])
+          .nice();
+  
+      const color = d3.scaleOrdinal()
+          .domain(["American", "European", "Japanese"])
+          .range(["steelblue", "orange", "green"]);
 
-        const x = d3.scaleLinear()
-            .domain(d3.extent(data, d => d.Horsepower))
-            .range([0, width])
-            .nice();
 
-        const y = d3.scaleLinear()
-            .domain(d3.extent(data, d => d.Weight))
-            .range([height, 0])
-            .nice();
+      plot.append("g").call(d3.axisLeft(y));
+      plot.append("g").attr("transform", `translate(0,${height})`).call(d3.axisBottom(x));
 
-        svg.append("g")
-            .call(d3.axisLeft(y));
+      // Add x-axis label
+      plot.append("text")
+      .attr("x", width / 2)
+      .attr("y", height + 40)
+      .attr("text-anchor", "middle")
+      .style("font-size", "14px")
+      .text("Horsepower");
 
-        svg.append("g")
-            .attr("transform", `translate(0,${height})`)
-            .call(d3.axisBottom(x));
+      // Add y-axis label
+      plot.append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", -50)
+      .attr("x", -height / 2)
+      .attr("text-anchor", "middle")
+      .style("font-size", "14px")
+      .text("Weight");
+  
+      const tooltip = d3.select("#scatter-tooltip");
+  
+      const activeCategory = {
+          American: true,
+          European: true,
+          Japanese: true
+      };
 
-        svg.selectAll("circle")
-            .data(data)
-            .enter().append("circle")
-            .attr("cx", d => x(d.Horsepower))
-            .attr("cy", d => y(d.Weight))
-            .attr("r", 5)
-            .attr("fill", d => ({American: "steelblue", European: "orange", Japanese: "green"}[d.Origin]))
-            .on("mouseover", (event, d) => {
-                tooltip.transition().style("opacity", 1);
-                tooltip.html(`<strong>${d.Car}</strong><br>HP: ${d.Horsepower}<br>Weight: ${d.Weight}`)
-                    .style("left", `${event.pageX}px`)
-                    .style("top", `${event.pageY}px`);
-            })
-            .on("mouseout", () => tooltip.style("opacity", 0));
-    }
+     
+
+      plot.selectAll("circle")
+          .data(filtered)
+          .enter()
+          .append("circle")
+          .attr("cx", d => x(+d.Horsepower))
+          .attr("cy", d => y(+d.Weight))
+          .attr("r", 5)
+          .attr("fill", d => color(d.Origin))
+          .attr("class", d => `dot origin-${d.Origin}`)
+          .on("mouseover", (event, d) => {
+              tooltip.transition().duration(200).style("opacity", 1);
+              tooltip.html(`<strong>${d.Car}</strong><br>HP: ${d.Horsepower}<br>Weight: ${d.Weight}`)
+                  .style("left", `${event.pageX + 10}px`)
+                  .style("top", `${event.pageY - 20}px`);
+          })
+          .on("mouseout", () => tooltip.transition().duration(300).style("opacity", 0));
+  
+      // legend (upper-left, inside plot area)
+      const legend = plot.append("g")
+          .attr("transform", `translate(10, 10)`);
+  
+      legend.append("rect")
+          .attr("width", 130)
+          .attr("height", 90)
+          .attr("fill", "white")
+          .attr("stroke", "#ccc")
+          .attr("rx", 5)
+          .attr("ry", 5);
+  
+      const categories = ["American", "European", "Japanese"];
+      legend.append("text")
+          .attr("x", 10)
+          .attr("y", 20)
+          .text("Origin")
+          .style("font-weight", "bold");
+  
+      categories.forEach((category, i) => {
+          const yOffset = 30 + i * 20;
+  
+          legend.append("circle")
+              .attr("cx", 15)
+              .attr("cy", yOffset)
+              .attr("r", 6)
+              .attr("fill", color(category));
+  
+          legend.append("text")
+              .attr("x", 30)
+              .attr("y", yOffset + 4)
+              .text(category)
+              .style("cursor", "pointer")
+              .on("click", () => {
+                  activeCategory[category] = !activeCategory[category];
+                  plot.selectAll("circle")
+                      .attr("display", d => activeCategory[d.Origin] ? "inline" : "none");
+              });
+      });
+  }
+    
 
     // Heatmap Implementation
     function initializeHeatmap(data) {
