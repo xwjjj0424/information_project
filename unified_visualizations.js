@@ -18,9 +18,9 @@
     // Scatterplot Implementation
     function initializeScatterplot(data) {
       const svg = d3.select("#scatterplot");
-      svg.selectAll("*").remove(); // Clear previous plot
+      svg.selectAll("*").remove(); 
   
-      // ⬇️ Get width and height directly from viewBox
+      //  Get width and height 
       const fullWidth = 700;
       const fullHeight = 500;
   
@@ -34,7 +34,7 @@
       const filtered = data.filter(d => d.Horsepower != null && d.Weight != null);
   
       const x = d3.scaleLinear()
-          .domain(d3.extent(filtered , d => +d.Horsepower)) // make sure numeric
+          .domain(d3.extent(filtered , d => +d.Horsepower)) 
           .range([0, width])
           .nice();
   
