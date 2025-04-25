@@ -14,13 +14,12 @@
         }
 
         .dashboard-container {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            /*grid-auto-columns: auto;*/
-            gap: 10px;
-            max-width: 1600px;
-            margin: 0 auto;
-        }
+			display: grid;
+			grid-template-columns: repeat(2, 1fr); 
+			gap: 10px;
+			max-width: 95vw;
+			margin: 0 auto;
+			}
 
         .chart-container {
             background: white;
@@ -31,41 +30,65 @@
         }
 
         .chart-title {
-            margin: 0 0 15px 0;
+            margin: 0;
             color: #333;
             font-size: 1.2em;
         }
 
         .tooltip {
-            position: absolute;
-            padding: 8px;
-            background: white;
-            border: 1px solid #ddd;
-            pointer-events: none;
-            font-size: 14px;
-        }
+			position: absolute;
+			background: white;
+			border: 1px solid #ccc;
+			padding: 6px;
+			font-size: 12px;
+			pointer-events: none;
+			opacity: 0;
+			}
 
         .axis { cursor: move; }
         .axis text { font-size: 12px; fill: black; }
         .line { stroke-width: 1; opacity: 0.4; }
         .slider-container { margin: 20px; }
         .slider-label { font-family: Arial; margin-left: 10px; }
+		#heatmap-container {
+    width: 640px;
+    height: 500px;
+    overflow: hidden;
+	
+  }
+		#scatter-cont,#heatmap-container {
+		height: 500px;
+		}
+
+		#scatterplot,#heatmap {
+		width: 100%;
+		height: 100%;
+		}
     </style>
 </head>
 <body>
     <div class="dashboard-container">
         <div class="chart-container" id="scatter-cont">
             <h2 class="chart-title">Horsepower vs Weight</h2>
-			<svg id="scatterplot" style="width: 100%; height: auto;" viewBox="0 0 700 500" preserveAspectRatio="xMidYMid meet"></svg>
+			<svg id="scatterplot" viewBox="0 0 700 500" preserveAspectRatio="xMidYMid meet"></svg>
 
             <div class="tooltip" id="scatter-tooltip"></div>
         </div>
         
-        <div class="chart-container" id="heatmap-cont">
-            <h2 class="chart-title">Correlation Matrix</h2>
-            <svg id="heatmap" width="700" height="500"></svg>
-        </div>
-        
+		<div class="chart-container" id="heatmap-container">
+			<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+			  <h2 class="chart-title" style="margin: 0;">Correlation Matrix</h2>
+			  <button id="heatmap-export-btn" style="padding: 6px 12px;">Export Heatmap as PNG</button>
+			</div>
+		  
+			<svg id="heatmap" viewBox="0 0 700 500" preserveAspectRatio="xMidYMid meet"></svg>
+		  
+			<div id="heatmap-tooltip"
+				 class="tooltip"
+				 style="position: fixed; opacity: 0; background: white; padding: 6px; border: 1px solid #ccc; font-size: 12px; pointer-events: none; z-index: 1000;">
+			</div>
+		  </div>
+
         <div class="chart-container" id="bar-cont">
             <h2 class="chart-title">Average MPG by Origin</h2>
             <svg id="bar-chart" width="700" height="500"></svg>

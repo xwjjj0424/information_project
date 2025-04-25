@@ -1,10 +1,13 @@
 
 const svg = d3.select("svg");
+
 const width = +svg.attr("width");
 const height = +svg.attr("height");
 const margin = { top: 80, right: 30, bottom: 30, left: 80 };
-const innerWidth = width - margin.left - margin.right;
-const innerHeight = height - margin.top - margin.bottom;
+
+const innerWidth = 400;
+const innerHeight = 400;
+
 
 const tooltip = d3.select("body")
   .append("div")
