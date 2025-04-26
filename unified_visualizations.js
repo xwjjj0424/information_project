@@ -391,8 +391,8 @@
     // PCP Implementation
     function initializePCP(data) {
         const margin = { top: 20, right: 20, bottom: 20, left: 20 };
-        const width = 1000 - margin.left - margin.right;
-        const height = 5000 - margin.top - margin.bottom;
+        const width = 700 - margin.left - margin.right;
+        const height = 500 - margin.top - margin.bottom;
 
         const container = d3.select("#pcp-cont");
         const sliderContainer = container.append('div')
@@ -409,9 +409,11 @@
             .attr('class', 'slider-label')
             .text('100%');
 
-        var svg = container.append('pcp-chart')
+        var svg = container.append('svg')
             .attr('width', width + margin.left + margin.right)
             .attr('height', height + margin.top + margin.bottom)
+            .attr('viewbox', "0 0 700 500")
+            .attr('preserveAspectRatio', "xMidYMid meet")
             .append('g')
             .attr('transform', `translate(${margin.left},${margin.top})`);
 
@@ -435,7 +437,7 @@
 
           // Create color scale for origin
           if (processedData[0].Origin) {
-            const origins = [...new Set(processedData.map(d => d.origin))];
+            const origins = [...new Set(processedData.map(d => d.Origin))];
             colorScale = d3.scaleOrdinal() //["American", "European", "Japanese"], ["red", "green", "steelblue"])
               .domain(origins)
               .range(d3.schemeCategory10);
@@ -448,12 +450,12 @@
             if (columnTypes[dim] === 'numerical') {
               yScales[dim] = d3.scaleLinear()
                 .domain(d3.extent(processedData, d => d[dim]))
-                .range([height, 0]);
+                .range([0, height]);
             } else {
               const categories = Array.from(new Set(processedData.map(d => d[dim]))).sort();
               yScales[dim] = d3.scalePoint()
                 .domain(categories)
-                .range([height, 0])
+                .range([0, height])
                 .padding(0.5);
             }
           });
@@ -495,7 +497,7 @@
             const sampleData = shuffledData.slice(0, sampleSize);
 
             const paths = svg.selectAll('.line')
-              .data(sampleData, (d, i) => i + d.origin); 
+              .data(sampleData, (d, i) => i + d.Origin); 
 
             paths.exit().remove();
 
